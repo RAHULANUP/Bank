@@ -137,7 +137,7 @@ public class CustomerController {
     )
     @ApiResponses({
     @ApiResponse(
-        description="",//------------------------
+        description="200 OK",
         content={@Content(schema=@Schema(implementation=Customer.class))},
         responseCode="200")
     })
