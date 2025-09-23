@@ -1,2 +1,2 @@
-# Bank App
+# Bank Application
 A SIMPLE BANK APPLICATION USING SPRING BOOT.
