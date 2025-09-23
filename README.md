@@ -1,2 +1,2 @@
 # Bank App
-A simple bank application using spring boot
+A SIMPLE BANK APPLICATION USING SPRING BOOT.
