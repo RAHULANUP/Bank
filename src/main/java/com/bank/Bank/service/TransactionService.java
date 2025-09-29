@@ -20,10 +20,10 @@ public class TransactionService {
     private final TransactionMapper transactionMapper;
 
     @Transactional(readOnly = true)
-    public List<TransactionDto> getTransactionsByAccountId(Long accountId) {
+    public List<TransactionDto> getTransactionsByAccountNumber(Long accountNumber) {
         List<Transaction> transactions = transactionRepository.findAll()
                 .stream()
-                .filter(tx -> tx.getAccount() != null && tx.getAccount().getId().equals(accountId))
+                .filter(tx -> tx.getAccount() != null && tx.getAccount().getAccountNumber().equals(accountNumber))
                 .collect(Collectors.toList());
         return transactions.stream().map(transactionMapper::toDto).collect(Collectors.toList());
     }
