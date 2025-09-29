@@ -32,11 +32,11 @@ public class TransactionMapper {
         transactionDto.setTransactionDate(transaction.getTransactionDate());
 
         if (transaction.getCustomer() != null) {
-            transactionDto.setCustomerId(transaction.getCustomer().getAccountNumber());
+            transactionDto.setCustomerId(transaction.getCustomer().getCustomerId());
             transactionDto.setCustomerName(transaction.getCustomer().getCustomerName());
         }
         if (transaction.getAccount() != null) {
-            transactionDto.setAccountId(transaction.getAccount().getId());
+            transactionDto.setAccountNumber(transaction.getAccount().getAccountNumber());
             transactionDto.setAccountBalance(transaction.getAccount().getBalance());
         }
 
