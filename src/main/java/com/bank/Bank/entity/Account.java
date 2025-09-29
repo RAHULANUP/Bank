@@ -22,7 +22,7 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long accountNumber;
 
     @ManyToOne
     @JoinColumn(name = "customer_accountNo")
