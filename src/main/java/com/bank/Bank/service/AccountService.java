@@ -28,17 +28,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AccountService {
     @Transactional
-    public TransactionDto transferBetweenAccounts(Long fromAccountId, Long toAccountId, BigDecimal amount) {
-        if (fromAccountId.equals(toAccountId)) {
+    public TransactionDto transferBetweenAccounts(Long fromAccountNumber, Long toAccountNumber, BigDecimal amount) {
+        if (fromAccountNumber.equals(toAccountNumber)) {
             throw new WrongInputException("Source and destination accounts must be different");
         }
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new WrongInputException("Transfer amount must be greater than zero");
         }
-        Account fromAccount = accountRepository.findById(fromAccountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Source account not found: " + fromAccountId));
-        Account toAccount = accountRepository.findById(toAccountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Destination account not found: " + toAccountId));
+        Account fromAccount = accountRepository.findById(fromAccountNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Source account not found: " + fromAccountNumber));
+        Account toAccount = accountRepository.findById(toAccountNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Destination account not found: " + toAccountNumber));
         if (fromAccount.getBalance().compareTo(amount) < 0) {
             throw new WrongInputException("Insufficient balance in source account");
         }
@@ -72,10 +72,10 @@ public class AccountService {
     private final AccountMapper accountMapper;
     private final TransactionMapper transactionMapper;
 
-    public AccountDto createAccountForCustomer(Long customerAccountNumber, CreateAccountRequest request) {
-        Customer customer = customerRepository.findById(customerAccountNumber)
+    public AccountDto createAccountForCustomer(Long customerId, CreateAccountRequest request) {
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("Customer not found with id: " + customerAccountNumber));
+                        () -> new ResourceNotFoundException("Customer not found with id: " + customerId));
         Account account = new Account();
         account.setBalance(request.getInitialBalance());
         account.setCustomer(customer);
@@ -83,26 +83,43 @@ public class AccountService {
         return accountMapper.toDto(saved);
     }
 
-    public AccountDto getFirstAccountInfo(Long customerAccountNumber) {
-        Customer customer = customerRepository.findById(customerAccountNumber)
+    public AccountDto getFirstAccountInfo(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("Customer not found with id:" + customerAccountNumber));
+                        () -> new ResourceNotFoundException("Customer not found with id:" + customerId));
+
+        if (customer.getAccount() == null || customer.getAccount().isEmpty()) {
+            throw new ResourceNotFoundException("No account found for customer id: " + customerId);
+        }
 
         return accountMapper.toDto(customer.getAccount().get(0));
     }
 
     @Transactional
-    public TransactionDto depositToCustomerAccount(Long customerAccountNumber, BigDecimal amount) {
+    public TransactionDto depositToCustomerAccount(Long customerId, BigDecimal amount, Long accountNumber) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new WrongInputException("Deposit amount must be greater than zero");
         }
-        Customer customer = customerRepository.findById(customerAccountNumber)
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("Customer not found with id: " + customerAccountNumber));
+                        () -> new ResourceNotFoundException("Customer not found with id: " + customerId));
         if (customer.getAccount() == null || customer.getAccount().isEmpty()) {
-            throw new ResourceNotFoundException("No account found for customer id: " + customerAccountNumber);
+            throw new ResourceNotFoundException("No account found for customer id: " + customerId);
         }
-        Account account = customer.getAccount().get(0);
+
+        Account account;
+        if (accountNumber != null) {
+            // Find the specific account by account number
+            account = customer.getAccount().stream()
+                    .filter(acc -> acc.getAccountNumber().equals(accountNumber))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Account number " + accountNumber + " not found for customer id: " + customerId));
+        } else {
+            // Use the first account if no account number is specified
+            account = customer.getAccount().get(0);
+        }
+
         account.setBalance(account.getBalance().add(amount));
         accountRepository.save(account);
         Transaction transaction = new Transaction();
@@ -115,17 +132,30 @@ public class AccountService {
         return transactionMapper.toDto(savedTransaction);
     }
 
-    public TransactionDto withdrawFromCustomerAccount(Long customerAccountNumber, BigDecimal amount) {
+    public TransactionDto withdrawFromCustomerAccount(Long customerId, BigDecimal amount, Long accountNumber) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new WrongInputException("Withdrawal amount must be greater than zero");
         }
-        Customer customer = customerRepository.findByIdAccounts(customerAccountNumber)
+        Customer customer = customerRepository.findByIdAccounts(customerId)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("Customer not found with id: " + customerAccountNumber));
+                        () -> new ResourceNotFoundException("Customer not found with id: " + customerId));
         if (customer.getAccount() == null || customer.getAccount().isEmpty()) {
-            throw new ResourceNotFoundException("No account found for customer id: " + customerAccountNumber);
+            throw new ResourceNotFoundException("No account found for customer id: " + customerId);
         }
-        Account account = customer.getAccount().get(0);
+
+        Account account;
+        if (accountNumber != null) {
+            // Find the specific account by account number
+            account = customer.getAccount().stream()
+                    .filter(acc -> acc.getAccountNumber().equals(accountNumber))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Account number " + accountNumber + " not found for customer id: " + customerId));
+        } else {
+            // Use the first account if no account number is specified
+            account = customer.getAccount().get(0);
+        }
+
         if (account.getBalance().compareTo(amount) < 0) {
             throw new WrongInputException("Insufficient balance for withdrawal");
         }
@@ -139,5 +169,17 @@ public class AccountService {
         transaction.setAccount(account);
         Transaction savedTransaction = transactionRepository.save(transaction);
         return transactionMapper.toDto(savedTransaction);
+    }
+
+    public BigDecimal getAccountBalance(Long customerId, Long accountNumber) {
+        Account account = accountRepository.findById(accountNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + accountNumber));
+
+        // Verify that the account belongs to the customer
+        if (!account.getCustomer().getCustomerId().equals(customerId)) {
+            throw new WrongInputException("Account does not belong to the specified customer");
+        }
+
+        return account.getBalance();
     }
 }
