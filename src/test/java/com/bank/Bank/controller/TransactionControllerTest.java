@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-class TransactionControllerUnitTest {
+class TransactionControllerTest {
     @Mock
     private TransactionService transactionService;
     @InjectMocks
@@ -29,7 +29,7 @@ class TransactionControllerUnitTest {
 
     @Test
     void getTransactionsByAccount_shouldReturnOk() {
-        when(transactionService.getTransactionsByAccountId(anyLong()))
+        when(transactionService.getTransactionsByAccountNumber(anyLong()))
                 .thenReturn(Collections.singletonList(new TransactionDto()));
         ResponseEntity<List<TransactionDto>> response = transactionController.getTransactionsByAccount(1L);
         assertEquals(200, response.getStatusCode().value());
