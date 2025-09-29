@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountDto {
-    private Long id;
+    private Long accountNumber;
     private Long customerId;
     private String customerName;
     private BigDecimal balance;
