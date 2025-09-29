@@ -68,7 +68,8 @@ class AccountServiceTest {
 
     @Test
     void depositToCustomerAccount_shouldThrowOnInvalidAmount() {
-        assertThrows(WrongInputException.class, () -> accountService.depositToCustomerAccount(1L, BigDecimal.ZERO));
+        assertThrows(WrongInputException.class,
+                () -> accountService.depositToCustomerAccount(1L, BigDecimal.ZERO, null));
     }
 
     // Add more tests for deposit, withdraw, and transfer as needed
