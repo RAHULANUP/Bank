@@ -28,9 +28,22 @@ public class CustomerService {
         return saved.stream().map(customerMapper::toDto).toList();
     }
 
-    public Optional<CustomerDto> getCustomerByAccountNumber(Long customerAccountNumber) {
-        Optional<Customer> customer = customerRepository.findById(customerAccountNumber);
+    public Optional<CustomerDto> getCustomerById(Long customerId) {
+        Optional<Customer> customer = customerRepository.findById(customerId);
         return customer.map(customerMapper::toDto);
+    }
+
+    public Optional<CustomerDto> login(String customerName, String customerAadhar) {
+        List<Customer> customers = customerRepository.findAll();
+        Optional<Customer> customer = customers.stream()
+                .filter(c -> c.getCustomerName().equals(customerName) &&
+                        c.getCustomerAadhar().equals(customerAadhar))
+                .findFirst();
+        return customer.map(customerMapper::toDto);
+    }
+
+    public boolean logout(Long customerId) {
+        return customerRepository.existsById(customerId);
     }
 
 }
