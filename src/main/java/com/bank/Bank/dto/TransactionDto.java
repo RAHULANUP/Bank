@@ -19,6 +19,6 @@ public class TransactionDto {
     private LocalDateTime transactionDate;
     private Long customerId;
     private String customerName;
-    private Long accountId;
+    private Long accountNumber;
     private BigDecimal accountBalance;
 }
