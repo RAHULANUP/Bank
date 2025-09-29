@@ -31,14 +31,14 @@ class TransactionServiceTest {
     }
 
     @Test
-    void getTransactionsByAccountId_shouldReturnList() {
+    void getTransactionsByAccountNumber_shouldReturnList() {
         Transaction tx = new Transaction();
         Account acc = new Account();
-        acc.setId(1L);
+        acc.setAccountNumber(1L);
         tx.setAccount(acc);
         when(transactionRepository.findAll()).thenReturn(Collections.singletonList(tx));
         when(transactionMapper.toDto(any(Transaction.class))).thenReturn(new TransactionDto());
-        List<TransactionDto> result = transactionService.getTransactionsByAccountId(1L);
+        List<TransactionDto> result = transactionService.getTransactionsByAccountNumber(1L);
         assertEquals(1, result.size());
     }
 }
