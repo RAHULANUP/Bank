@@ -11,6 +11,6 @@ import com.bank.Bank.entity.Customer;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-    @Query("SELECT c FROM Customer c LEFT JOIN FETCH c.account WHERE c.accountNumber = :accountNumber")
-    Optional<Customer> findByIdAccounts(@Param("accountNumber") Long accountNumber);
+    @Query("SELECT c FROM Customer c LEFT JOIN FETCH c.account WHERE c.customerId = :customerId")
+    Optional<Customer> findByIdAccounts(@Param("customerId") Long customerId);
 }
