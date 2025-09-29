@@ -18,7 +18,7 @@ public class CustomerMapper {
             return null;
         }
         Customer customer = new Customer();
-        customer.setAccountNumber(customerDto.getAccountNumber());
+        customer.setCustomerId(customerDto.getCustomerId());
         customer.setCustomerName(customerDto.getCustomerName());
         customer.setCustomerAddress(customerDto.getCustomerAddress());
         customer.setCustomerAadhar(customerDto.getCustomerAadhar());
@@ -32,7 +32,7 @@ public class CustomerMapper {
             return null;
         }
         CustomerDto customerDto = new CustomerDto();
-        customerDto.setAccountNumber(customer.getAccountNumber());
+        customerDto.setCustomerId(customer.getCustomerId());
         customerDto.setCustomerName(customer.getCustomerName());
         customerDto.setCustomerAddress(customer.getCustomerAddress());
         customerDto.setCustomerAadhar(customer.getCustomerAadhar());
