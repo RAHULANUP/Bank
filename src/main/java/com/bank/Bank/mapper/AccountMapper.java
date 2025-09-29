@@ -12,7 +12,7 @@ public class AccountMapper {
             return null;
         }
         Account account = new Account();
-        account.setId(accountDto.getId());
+        account.setAccountNumber(accountDto.getAccountNumber());
         account.setBalance(accountDto.getBalance());
         return account;
     }
@@ -22,11 +22,11 @@ public class AccountMapper {
             return null;
         }
         AccountDto accountDto = new AccountDto();
-        accountDto.setId(account.getId());
+        accountDto.setAccountNumber(account.getAccountNumber());
         accountDto.setBalance(account.getBalance());
 
         if (account.getCustomer() != null) {
-            accountDto.setCustomerId(account.getCustomer().getAccountNumber());
+            accountDto.setCustomerId(account.getCustomer().getCustomerId());
             accountDto.setCustomerName(account.getCustomer().getCustomerName());
         }
         return accountDto;
