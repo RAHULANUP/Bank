@@ -28,7 +28,7 @@ class CustomerControllerTest {
 
     @Test
     void withdrawFromCustomer_shouldReturnOk() {
-        when(accountService.withdrawFromCustomerAccount(anyLong(), any(BigDecimal.class), null))
+        when(accountService.withdrawFromCustomerAccount(anyLong(), any(BigDecimal.class), any()))
                 .thenReturn(new TransactionDto());
         ResponseEntity<TransactionDto> response = customerController.withdrawFromCustomer(1L, BigDecimal.TEN, null);
         assertEquals(200, response.getStatusCode().value());
